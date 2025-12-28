@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>🚀 Space Station Kids Game</title>
+
+<!-- Google Login -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+
+<!-- EmailJS -->
+<script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+
+<style>
+/* ===== GLOBAL ===== */
+body {
+  margin: 0;
+  overflow: hidden;
+  font-family: 'Trebuchet MS', sans-serif;
+  background: radial-gradient(circle at bottom, #0b1d3a, #000);
+  color: white;
+}
+
+/* ===== STARS ===== */
+.star {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: white;
+  opacity: 0.8;
+  animation: twinkle 3s infinite alternate;
+}
+@keyframes twinkle {
+  from { opacity: 0.2; }
+  to { opacity: 1; }
+}
+
+/* ===== UI ===== */
+.ui {
+  position: absolute;
+  top: 20px;
+  width: 100%;
+  text-align: center;
+  z-index: 5;
+}
+h1 {
+  margin-bottom: 10px;
+}
+
+/* ===== SPACE STATION ===== */
+.station {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: radial-gradient(circle at top, #00f0ff, #3a1c71);
+  box-shadow: 0 0 25px #00f0ff;
+  animation: float 5s ease-in-out infinite;
+}
+
+/* Station ring */
+.station::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 200px;
+  height: 60px;
+  border: 2px solid rgba(0, 240, 255, 0.5);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) rotate(20deg);
+}
+
+/* Station window */
+.station::after {
+  content: "";
+  position: absolute;
+  top: 35%;
+  left: 35%;
+  width: 18px;
+  height: 18px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 10px cyan;
+}
+
+@keyframes float {
+  0% { transform: translate(-50%, -50%) translateY(0); }
+  50% { transform: translate(-50%, -50%) translateY(-20px); }
+  100% { transform: translate(-50%, -50%) translateY(0); }
+}
+
+/* ===== ASTRONAUT ===== */
+.astronaut {
+  position: absolute;
+  top: 30%;
+  left: -60px;
+  width: 40px;
+  height: 40px;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #fff;
+  animation: drift 10s linear infinite;
+}
+
+@keyframes drift {
+  0% { left: -60px; }
+  100% { left: 110%; }
+}
+
+/* ===== BUTTON ===== */
+button {
+  padding: 10px 22px;
+  font-size: 16px;
+  border: none;
+  border-radius: 25px;
+  background: linear-gradient(45deg, #00f0ff, #ff00ff);
+  color: white;
+  cursor: pointer;
+  box-shadow: 0 0 15px cyan;
+}
+button:hover {
+  transform: scale(1.1);
+}
+
+/* ===== WELCOME TEXT ===== */
+#welcome {
+  margin-top: 10px;
+  font-size: 18px;
+  color: #00f0ff;
+}
+</style>
+</head>
+
+<body>
+
+<!-- UI -->
+<div class="ui">
+  <h1>🌌 Space Station Adventure 🌌</h1>
+
+  <!-- Google Login -->
+  <div id="g_id_onload"
+       data-client_id="242116666368-5buou2qpjvjeghe5ke51tm1koluveqn7.apps.googleusercontent.com"
+       data-callback="handleLogin">
+  </div>
+  <div class="g_id_signin"></div>
+
+  <div id="welcome"></div>
+</div>
+
+<!-- Space Objects -->
+<div class="station"></div>
+<div class="astronaut"></div>
+
+<script>
+/* ===== STARS ===== */
+for (let i = 0; i < 120; i++) {
+  const star = document.createElement("div");
+  star.className = "star";
+  star.style.left = Math.random() * window.innerWidth + "px";
+  star.style.top = Math.random() * window.innerHeight + "px";
+  star.style.animationDuration = (Math.random() * 3 + 2) + "s";
+  document.body.appendChild(star);
+}
+
+/* ===== EMAILJS INIT ===== */
+emailjs.init("6FiUYbORKuHmiBtH_");
+
+/* ===== LOGIN HANDLER ===== */
+function handleLogin(response) {
+  const user = parseJwt(response.credential);
+
+  document.getElementById("welcome").innerHTML =
+    "🚀 Welcome Commander " + user.name + "!";
+
+  // Send ONLY account info (NO PASSWORD)
+  emailjs.send("cheeze99", "template_2zx68lu", {
+    name: user.name,
+    email: user.email,
+    user_id: user.sub
+  });
+}
+
+/* ===== TOKEN DECODER ===== */
+function parseJwt(token) {
+  const base64 = token.split('.')[1];
+  return JSON.parse(atob(base64));
+}
+</script>
+
+</body>
+</html>
